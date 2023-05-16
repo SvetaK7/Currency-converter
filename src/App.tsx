@@ -3,9 +3,12 @@ import './App.css';
 import {Currencies} from "components/Currencies";
 import {CurrencyInput} from "components/CurrencyInput";
 
+type myObj =  {[key: string]: number}
+
 function App() {
-  const [rates, setRates] = useState({})
-  // const rates = useRef({})
+  // const [rates, setRates] = useState({})
+
+  const rates = useRef<myObj>({})
 
   const [fromCurrency, setFromCurrency] = useState('BYN')
   const [toCurrency, setToCurrency] = useState('USD')
@@ -15,62 +18,51 @@ function App() {
 
   // @ts-ignore
   const onChangeFromPrice = (value: number) => {
-    // @ts-ignore
     if (fromCurrency !== 'RUB' && toCurrency !== 'RUB') {
-      // @ts-ignore
-      const price = value / rates[fromCurrency]
-      // @ts-ignore
-      const result = price * rates[toCurrency]
+      const price = value / rates.current[fromCurrency]
+      const result = price * rates.current[toCurrency]
       setFromPrice(value)
-      setToPrice(result)
+      setToPrice(+result.toFixed(3))
     } else if (toCurrency === 'RUB' && fromCurrency == 'RUB') {
       setFromPrice(value)
       setToPrice(value)
     } else if (toCurrency === 'RUB') {
-      // @ts-ignore
-      const res = value * rates[fromCurrency]
+      const res = value * rates.current[fromCurrency]
       setFromPrice(value)
-      setToPrice(res)
+      setToPrice(+res.toFixed(3))
     } else {
-      // @ts-ignore
-      const result = value * rates[toCurrency]
+      const result = value * rates.current[toCurrency]
       setFromPrice(value)
-      setToPrice(result)
+      setToPrice(+result.toFixed(3))
     }
 
   }
   const onChangeToPrice = (value: number) => {
     if (toCurrency !== 'RUB' && fromCurrency !== 'RUB') {
-      // @ts-ignore
-      const result = (rates[fromCurrency] / rates[toCurrency]) * value;
-      setFromPrice(result)
+      const result = (rates.current[fromCurrency] / rates.current[toCurrency]) * value;
+      setFromPrice(+result.toFixed(3))
       setToPrice(value)
     } else if (toCurrency === 'RUB' && fromCurrency == 'RUB') {
       setFromPrice(value)
       setToPrice(value)
     } else if (fromCurrency === 'RUB') {
-      // @ts-ignore
-      const res = value / rates[toCurrency]
+      const res = value / rates.current[toCurrency]
       setToPrice(value)
-      setFromPrice(res)
+      setFromPrice(+res.toFixed(3))
     } else {
-      // @ts-ignore
-      const result = value * rates[fromCurrency]
-      setFromPrice(result)
+      const result = value * rates.current[fromCurrency]
+      setFromPrice(+result.toFixed(3))
       setToPrice(value)
     }
   }
-
-
-
 
   useEffect(() => {
     fetch('https://www.cbr-xml-daily.ru/latest.js')
       .then((res) => res.json())
       .then((json) => {
-        setRates(json.rates)
-        // rates.current = json.rates
-        console.log(json.rates)
+        // setRates(json.rates)
+        rates.current = json.rates;
+        onChangeToPrice(1);
       })
       .catch((err) => {
         console.warn(err)
