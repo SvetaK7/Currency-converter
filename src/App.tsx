@@ -13,45 +13,44 @@ function App() {
   const [fromCurrency, setFromCurrency] = useState('BYN')
   const [toCurrency, setToCurrency] = useState('USD')
 
-  const [fromPrice, setFromPrice] = useState(0);
-  const [toPrice, setToPrice] = useState(1);
+  const [fromPrice, setFromPrice] = useState('0');
+  const [toPrice, setToPrice] = useState('1');
 
-  // @ts-ignore
-  const onChangeFromPrice = (value: number) => {
+  const onChangeFromPrice = (value: string) => {
     if (fromCurrency !== 'RUB' && toCurrency !== 'RUB') {
-      const price = value / rates.current[fromCurrency]
+      const price = +value / rates.current[fromCurrency]
       const result = price * rates.current[toCurrency]
       setFromPrice(value)
-      setToPrice(+result.toFixed(3))
+      setToPrice(result.toFixed(3))
     } else if (toCurrency === 'RUB' && fromCurrency == 'RUB') {
       setFromPrice(value)
       setToPrice(value)
     } else if (toCurrency === 'RUB') {
-      const res = value * rates.current[fromCurrency]
+      const res = +value * rates.current[fromCurrency]
       setFromPrice(value)
-      setToPrice(+res.toFixed(3))
+      setToPrice(res.toFixed(3))
     } else {
-      const result = value * rates.current[toCurrency]
+      const result = +value * rates.current[toCurrency]
       setFromPrice(value)
-      setToPrice(+result.toFixed(3))
+      setToPrice(result.toFixed(3))
     }
 
   }
-  const onChangeToPrice = (value: number) => {
+  const onChangeToPrice = (value: string) => {
     if (toCurrency !== 'RUB' && fromCurrency !== 'RUB') {
-      const result = (rates.current[fromCurrency] / rates.current[toCurrency]) * value;
-      setFromPrice(+result.toFixed(3))
+      const result = (rates.current[fromCurrency] / rates.current[toCurrency]) * (+value);
+      setFromPrice(result.toFixed(3))
       setToPrice(value)
     } else if (toCurrency === 'RUB' && fromCurrency == 'RUB') {
       setFromPrice(value)
       setToPrice(value)
     } else if (fromCurrency === 'RUB') {
-      const res = value / rates.current[toCurrency]
+      const res = +value / rates.current[toCurrency]
       setToPrice(value)
-      setFromPrice(+res.toFixed(3))
+      setFromPrice(res.toFixed(3))
     } else {
-      const result = value * rates.current[fromCurrency]
-      setFromPrice(+result.toFixed(3))
+      const result = +value * rates.current[fromCurrency]
+      setFromPrice(result.toFixed(3))
       setToPrice(value)
     }
   }
@@ -62,7 +61,7 @@ function App() {
       .then((json) => {
         // setRates(json.rates)
         rates.current = json.rates;
-        onChangeToPrice(1);
+        onChangeToPrice('1');
       })
       .catch((err) => {
         console.warn(err)
